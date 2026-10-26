@@ -1,0 +1,64 @@
+using System;
+using System.Windows.Forms;
+
+namespace TicTacToe
+{
+    public partial class Form1 : Form
+    {
+        Button[] cells;
+        bool xTurn = true; // true - значит сейчас ходит крестик
+        int moves = 0;     // Moves подсчет ходов, нужен чисто для расчета ничьи
+
+        public Form1()
+        {
+            InitializeComponent();
+            cells = new[] { button1, button2, button3, button4, button5, button6, button7, button8, button9 };
+        }
+
+        void Cell_Click(object sender, EventArgs e) 
+        {
+            var b = (Button)sender; //sender это обьект
+            if (b.Text != "") return; // если клетка занята
+
+            b.Text = xTurn ? "X" : "O"; //это просто оператор если xTurn правда ставим X, если нет O
+            moves++; 
+
+            if (CheckWin())
+            {
+                MessageBox.Show("Победили " + b.Text + "!");
+                NewGame();
+            }
+            else if (moves == 9)// этот блок проверяет каждый раз победу/ничью, если ничего нету переход на некст ход
+            {
+                MessageBox.Show("Ничья!");
+                NewGame();
+            }
+            else xTurn = !xTurn;
+        }
+
+        bool CheckWin()
+        {
+            // все выигрышные линии: строки, столбцы, диагонали
+            int[,] lines = {
+                {0,1,2}, {3,4,5}, {6,7,8}, // строки
+                {0,3,6}, {1,4,7}, {2,5,8}, // столбцы
+                {0,4,8}, {2,4,6} // дигональ
+            };
+
+            for (int i = 0; i < 8; i++)
+            {
+                string a = cells[lines[i, 0]].Text;
+                if (a != "" && a == cells[lines[i, 1]].Text && a == cells[lines[i, 2]].Text)
+                    return true;
+            }
+            return false;
+        }
+
+        void NewGame()
+        {
+            foreach (var c in cells) c.Text = ""; //cells - то что перебираем. c = c[0.......9]. var - тип button. Text = "" - очищает
+            xTurn = true;
+            moves = 0;
+        }
+    }
+}
